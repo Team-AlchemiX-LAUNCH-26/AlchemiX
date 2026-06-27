@@ -1,0 +1,149 @@
+relic-ring-protocol/
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+├── .vscode/
+│   ├── extensions.json
+│   └── tasks.json
+├── cmd/
+│   ├── orchestrator/
+│   │   └── main.go
+│   └── planet-node/
+│       └── main.go
+├── configs/
+│   ├── example-universe-config.json
+│   └── universe-config.json
+├── deployments/
+│   ├── docker/
+│   │   ├── compose.yaml
+│   │   ├── Dockerfile.orchestrator
+│   │   └── Dockerfile.planet
+│   └── scripts/
+│       ├── kill-node.ps1
+│       ├── restore-node.ps1
+│       ├── start-network.ps1
+│       └── stop-network.ps1
+├── docs/
+│   ├── architecture.md
+│   ├── assumptions.md
+│   ├── sample-baseline-transmission.json
+│   ├── sample-hard-failure-transmission.json
+│   ├── verification.md
+│   └── vscode-setup.md
+├── frontend/
+│   ├── dist/
+│   │   └── index.html
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── HopLogTable.tsx
+│   │   │   ├── LatencyPanel.tsx
+│   │   │   └── UniverseMap.tsx
+│   │   ├── types/
+│   │   │   └── index.ts
+│   │   ├── App.tsx
+│   │   ├── main.tsx
+│   │   └── styles.css
+│   ├── wailsjs/
+│   │   ├── go/
+│   │   │   └── main/
+│   │   │       └── App.ts
+│   │   └── runtime/
+│   │       └── runtime.ts
+│   ├── index.html
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── vite.config.ts
+├── internal/
+│   ├── config/
+│   │   ├── defaults.go
+│   │   ├── loader.go
+│   │   ├── loader_test.go
+│   │   ├── planet_lookup.go
+│   │   ├── validator.go
+│   │   └── validator_test.go
+│   ├── domain/
+│   │   ├── hop_log.go
+│   │   ├── network_state.go
+│   │   ├── packet.go
+│   │   ├── planet.go
+│   │   ├── route.go
+│   │   ├── tower.go
+│   │   └── universe.go
+│   ├── encoding/
+│   │   ├── ascii.go
+│   │   ├── base_converter.go
+│   │   ├── deserializer.go
+│   │   ├── encoding_test.go
+│   │   ├── serializer.go
+│   │   └── translator.go
+│   ├── errors/
+│   │   └── errors.go
+│   ├── geometry/
+│   │   ├── closest_tower_pair.go
+│   │   ├── coordinate_scaling.go
+│   │   ├── geometry_test.go
+│   │   ├── ring_segments.go
+│   │   ├── tower_placement.go
+│   │   └── void_distance.go
+│   ├── latency/
+│   │   ├── atmosphere.go
+│   │   ├── fiber.go
+│   │   ├── latency_test.go
+│   │   ├── planet_transit.go
+│   │   ├── route_latency.go
+│   │   ├── tower_delay.go
+│   │   └── void.go
+│   ├── observability/
+│   │   └── logger.go
+│   ├── orchestrator/
+│   │   ├── endpoints.go
+│   │   ├── http_server.go
+│   │   ├── remote_client.go
+│   │   └── service.go
+│   ├── packet/
+│   │   ├── factory.go
+│   │   ├── hop_log_builder.go
+│   │   └── processor.go
+│   ├── planet/
+│   │   ├── handler.go
+│   │   ├── metrics.go
+│   │   └── service.go
+│   ├── resilience/
+│   │   └── network_state.go
+│   ├── routing/
+│   │   ├── dijkstra.go
+│   │   ├── graph.go
+│   │   ├── graph_builder.go
+│   │   ├── link_validator.go
+│   │   ├── priority_queue.go
+│   │   ├── route_cost.go
+│   │   ├── route_finder.go
+│   │   └── routing_test.go
+│   ├── simulation/
+│   │   ├── event.go
+│   │   └── result.go
+│   └── transport/
+│       ├── event_hub.go
+│       ├── http_client.go
+│       └── json.go
+├── pkg/
+│   └── protocol/
+│       ├── event.go
+│       ├── request.go
+│       └── response.go
+├── scripts/
+│   ├── create-project-folders.ps1
+│   └── setup-windows.ps1
+├── tests/
+│   └── integration/
+│       └── transmission_test.go
+├── .env.example
+├── .gitignore
+├── app.go
+├── go.mod
+├── go.sum
+├── main.go
+├── Makefile
+├── README.md
+├── VS_CODE_SETUP.md
+└── wails.json

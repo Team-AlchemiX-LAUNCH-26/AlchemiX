@@ -1,0 +1,3 @@
+import type { Latency } from '../types';
+const f=(v:number)=>`${v.toFixed(6)} s`;
+export function LatencyPanel({latency}:{latency?:Latency}){if(!latency)return <div className="empty">Send a packet to see the latency calculation.</div>;const rows=[['Fibre',latency.fiber_seconds],['Tower processing',latency.tower_seconds],['Atmosphere',latency.atmosphere_seconds],['Vacuum',latency.void_seconds]] as const;return <div>{rows.map(([label,value])=><div className="metric" key={label}><span>{label}</span><strong>{f(value)}</strong></div>)}<div className="metric total"><span>Total</span><strong>{f(latency.total_seconds)}</strong></div></div>}
