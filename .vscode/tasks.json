@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Relic Ring: Start Docker Network",
+      "type": "shell",
+      "command": "docker compose -f deployments/docker/compose.yaml up --build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Relic Ring: Wails Dev",
+      "type": "shell",
+      "command": "wails dev",
+      "problemMatcher": []
+    },
+    {
+      "label": "Relic Ring: Go Tests",
+      "type": "shell",
+      "command": "go test ./...",
+      "group": "test",
+      "problemMatcher": ["$go"]
+    },
+    {
+      "label": "Relic Ring: Frontend Build",
+      "type": "shell",
+      "command": "npm run build",
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "problemMatcher": []
+    }
+  ]
+}
