@@ -5,6 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/launch26/relic-ring-protocol/internal/agent"
+	"github.com/launch26/relic-ring-protocol/internal/intelligence"
 )
 
 // Client fetches live network state from the Chimera API.
@@ -23,22 +24,26 @@ import (
 //
 // Currently using mock responses for development.
 type Client struct {
-	baseURL    string
-	apiKey     string
-	tickCache  *TickCache
-	baselines  map[string]float64
-	capacities map[string]float64
+	baseURL     string
+	apiKey      string
+	tickCache   *TickCache
+	baselines   map[string]float64
+	capacities  map[string]float64
+	validator   *Validator
+	uncertainty *intelligence.UncertaintyDetector
 }
 
 // NewClient creates a new live API client.
 // In production, set baseURL from CHIMERA_BASE_URL and apiKey from CHIMERA_API_KEY.
 func NewClient(baseURL, apiKey string, baselines, capacities map[string]float64) *Client {
 	return &Client{
-		baseURL:    baseURL,
-		apiKey:     apiKey,
-		tickCache:  NewTickCache(),
-		baselines:  baselines,
-		capacities: capacities,
+		baseURL:     baseURL,
+		apiKey:      apiKey,
+		tickCache:   NewTickCache(),
+		baselines:   baselines,
+		capacities:  capacities,
+		validator:   NewValidator(0.90),
+		uncertainty: intelligence.NewUncertaintyDetector(),
 	}
 }
 
@@ -53,7 +58,17 @@ func (c *Client) GetLatestState(ctx context.Context) (agent.NetworkState, error)
 	//   ...
 	//
 	// For now, generate mock state.
-	return c.mockState(), nil
+	raw := c.mockState()
+
+	// Run through the validator to enforce saturation rules and status checks.
+	validated := c.validator.Validate(raw)
+
+	// Compute uncertainty scores using the UncertaintyDetector instead of hardcoding.
+	for id, obs := range validated.Links {
+		validated.Uncertainties[id] = c.uncertainty.Evaluate(obs)
+	}
+
+	return validated, nil
 }
 
 // mockState generates a realistic mock network state for development.
@@ -113,7 +128,7 @@ func (c *Client) mockState() agent.NetworkState {
 
 		links[ld.id] = obs
 		validLinks[ld.id] = status == "ok"
-		uncertainties[ld.id] = 0.05
+		uncertainties[ld.id] = 0 // Overwritten by UncertaintyDetector in GetLatestState.
 	}
 
 	state := agent.NetworkState{

@@ -5,6 +5,7 @@ import (
 	"embed"
 	"log"
 
+	"github.com/joho/godotenv"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -17,6 +18,12 @@ var assets embed.FS
 type wailsContext = context.Context
 
 func main() {
+	// Load .env so CHIMERA_API_KEY, CHIMERA_BASE_URL, etc. are available
+	// via os.Getenv. Missing .env is not fatal (env vars may be set directly).
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found — using environment variables directly")
+	}
+
 	app := NewApp()
 
 	bindings, err := buildAgentBindings()

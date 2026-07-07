@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math"
 	"os"
 	"sync"
@@ -35,9 +36,18 @@ func buildAgentBindings() (AgentBindings, error) {
 	planets, links, baselines, capacities := loadTopology()
 
 	modelsDir := "internal/models"
-	congestion, _ := intelligence.NewCongestionPredictor(modelsDir + "/congestion_model.json")
-	trust, _ := intelligence.NewTrustScorer(modelsDir + "/trust_model.json")
-	targeting, _ := intelligence.NewTargetingScorer(modelsDir + "/targeting_model.json")
+	congestion, err := intelligence.NewCongestionPredictor(modelsDir + "/congestion_model.json")
+	if err != nil {
+		log.Printf("WARNING: failed to load congestion model: %v (predictions will be zero)", err)
+	}
+	trust, err := intelligence.NewTrustScorer(modelsDir + "/trust_model.json")
+	if err != nil {
+		log.Printf("WARNING: failed to load trust model: %v (predictions will be zero)", err)
+	}
+	targeting, err := intelligence.NewTargetingScorer(modelsDir + "/targeting_model.json")
+	if err != nil {
+		log.Printf("WARNING: failed to load targeting model: %v (predictions will be zero)", err)
+	}
 
 	apiKey := os.Getenv("CHIMERA_API_KEY")
 	baseURL := os.Getenv("CHIMERA_BASE_URL")

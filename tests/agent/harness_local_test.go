@@ -2,6 +2,7 @@ package agenttest
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"sync"
 	"testing"
@@ -113,22 +114,31 @@ func (h *realHarness) Run(
 	provider := &scenarioStateProvider{snapshots: scenario.Snapshots}
 
 	modelsDir := "../../internal/models"
-	cong, _ := intelligence.NewCongestionPredictor(modelsDir + "/congestion_model.json")
-	trust, _ := intelligence.NewTrustScorer(modelsDir + "/trust_model.json")
-	targ, _ := intelligence.NewTargetingScorer(modelsDir + "/targeting_model.json")
+	cong, err := intelligence.NewCongestionPredictor(modelsDir + "/congestion_model.json")
+	if err != nil {
+		return DecisionReport{}, fmt.Errorf("load congestion model: %w", err)
+	}
+	trust, err := intelligence.NewTrustScorer(modelsDir + "/trust_model.json")
+	if err != nil {
+		return DecisionReport{}, fmt.Errorf("load trust model: %w", err)
+	}
+	targ, err := intelligence.NewTargetingScorer(modelsDir + "/targeting_model.json")
+	if err != nil {
+		return DecisionReport{}, fmt.Errorf("load targeting model: %w", err)
+	}
 
 	cfg := agent.DefaultConfig()
 
 	planets := []string{"Aegis", "Boreas", "Dawn", "Elysium", "Fenix", "Caelum"}
 	rLinks := []agent.RouterLink{
-		{"Aegis", "Boreas", 100}, {"Aegis", "Dawn", 200}, {"Aegis", "Elysium", 300},
-		{"Boreas", "Fenix", 150}, {"Dawn", "Fenix", 100},
-		{"Caelum", "Dawn", 200}, {"Caelum", "Elysium", 250}, {"Caelum", "Fenix", 120},
+		{A: "Aegis", B: "Boreas", LatencyMS: 100}, {A: "Aegis", B: "Dawn", LatencyMS: 200}, {A: "Aegis", B: "Elysium", LatencyMS: 300},
+		{A: "Boreas", B: "Fenix", LatencyMS: 150}, {A: "Dawn", B: "Fenix", LatencyMS: 100},
+		{A: "Caelum", B: "Dawn", LatencyMS: 200}, {A: "Caelum", B: "Elysium", LatencyMS: 250}, {A: "Caelum", B: "Fenix", LatencyMS: 120},
 	}
 	cLinks := []candidate.LinkDef{
-		{"Aegis", "Boreas", 100}, {"Aegis", "Dawn", 200}, {"Aegis", "Elysium", 300},
-		{"Boreas", "Fenix", 150}, {"Dawn", "Fenix", 100},
-		{"Caelum", "Dawn", 200}, {"Caelum", "Elysium", 250}, {"Caelum", "Fenix", 120},
+		{A: "Aegis", B: "Boreas", LatencyMS: 100}, {A: "Aegis", B: "Dawn", LatencyMS: 200}, {A: "Aegis", B: "Elysium", LatencyMS: 300},
+		{A: "Boreas", B: "Fenix", LatencyMS: 150}, {A: "Dawn", B: "Fenix", LatencyMS: 100},
+		{A: "Caelum", B: "Dawn", LatencyMS: 200}, {A: "Caelum", B: "Elysium", LatencyMS: 250}, {A: "Caelum", B: "Fenix", LatencyMS: 120},
 	}
 
 	router := agent.NewRouterAdapter(planets, rLinks)
