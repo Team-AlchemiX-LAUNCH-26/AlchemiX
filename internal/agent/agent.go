@@ -18,6 +18,7 @@ type Agent struct {
 	Targeting  TargetingModel
 	LiveState  StateProvider
 	Loop       *DecisionLoop
+	OnHop      func(context.Context, HopDecision)
 }
 
 // LoadConfig reads agent configuration from a JSON file.

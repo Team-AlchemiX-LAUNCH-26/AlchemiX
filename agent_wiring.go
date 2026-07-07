@@ -15,6 +15,7 @@ import (
 	"github.com/launch26/relic-ring-protocol/internal/candidate"
 	"github.com/launch26/relic-ring-protocol/internal/intelligence"
 	"github.com/launch26/relic-ring-protocol/internal/liveapi"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // buildAgentBindings constructs the real internal agent and wraps it in the
@@ -80,11 +81,17 @@ func buildAgentBindings() (AgentBindings, error) {
 		Loop:       loop,
 	}
 
-	auditLog := audit.NewLogger(500)
-
 	// Simple timeline tracker.
 	var timelineMu sync.Mutex
 	var timeline []PacketTimelineEntryDTO
+
+	// Define the onHop callback to stream execution.
+	ag.OnHop = func(ctx context.Context, hop agentpkg.HopDecision) {
+		runtime.EventsEmit(ctx, "agent:hop", hop)
+	}
+	ag.Loop.OnHop = ag.OnHop
+
+	auditLog := audit.NewLogger(500)
 
 	bindings := AgentBindings{
 		Parse: func(raw string) (ParsedTransmissionRequestDTO, error) {

@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { agentApi } from "../services/agentApi";
+import { EventsOn } from "../../wailsjs/runtime/runtime";
 import type {
   AgentDecisionReport,
   AgentState,
   AuditRecord,
+  HopDecision,
   PacketTimelineEntry,
   ParsedTransmissionRequest,
 } from "../types/agent";
@@ -24,7 +26,12 @@ function errorMessage(error: unknown): string {
   return "An unexpected agent error occurred.";
 }
 
-export function AgentDashboard() {
+export interface AgentDashboardProps {
+  onExpansionChange?: (expanded: boolean) => void;
+  onLivePathUpdate?: (path: string[]) => void;
+}
+
+export function AgentDashboard({ onExpansionChange, onLivePathUpdate }: AgentDashboardProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [parsed, setParsed] = useState<ParsedTransmissionRequest>();
@@ -32,6 +39,9 @@ export function AgentDashboard() {
   const [state, setState] = useState<AgentState>(EMPTY_STATE);
   const [audit, setAudit] = useState<AuditRecord[]>([]);
   const [timeline, setTimeline] = useState<PacketTimelineEntry[]>([]);
+  const [liveHops, setLiveHops] = useState<HopDecision[]>([]);
+  const [livePath, setLivePath] = useState<string[]>([]);
+  const [expandedHopIndex, setExpandedHopIndex] = useState<number | null>(null);
 
   const refreshDiagnostics = useCallback(async () => {
     const [nextState, nextAudit, nextTimeline] = await Promise.all([
@@ -49,6 +59,25 @@ export function AgentDashboard() {
     void refreshDiagnostics().catch((reason) => {
       setError(errorMessage(reason));
     });
+
+    const unsubscribe = EventsOn("agent:hop", (raw: unknown) => {
+      const hop = raw as HopDecision;
+      setLiveHops((current) => {
+        setExpandedHopIndex(current.length);
+        return [...current, hop];
+      });
+      setLivePath((current) => {
+        let newPath = current;
+        if (current.length === 0) newPath = [hop.current_planet, hop.next_planet];
+        else if (current[current.length - 1] === hop.current_planet) {
+          newPath = [...current, hop.next_planet];
+        }
+        if (onLivePathUpdate) onLivePathUpdate(newPath);
+        return newPath;
+      });
+    });
+
+    return unsubscribe;
   }, [refreshDiagnostics]);
 
   async function parse(raw: string) {
@@ -69,6 +98,10 @@ export function AgentDashboard() {
     try {
       const parsedRequest = await agentApi.parse(raw);
       setParsed(parsedRequest);
+      setLiveHops([]);
+      setLivePath([]);
+      if (onLivePathUpdate) onLivePathUpdate([]);
+      if (onExpansionChange) onExpansionChange(true);
 
       const decision = await agentApi.evaluate(raw);
       setReport(decision);
@@ -89,7 +122,12 @@ export function AgentDashboard() {
       await agentApi.reset();
       setParsed(undefined);
       setReport(undefined);
+      setLiveHops([]);
+      setLivePath([]);
+      if (onLivePathUpdate) onLivePathUpdate([]);
+      setExpandedHopIndex(null);
       await refreshDiagnostics();
+      if (onExpansionChange) onExpansionChange(false);
     } catch (reason) {
       setError(errorMessage(reason));
     } finally {
@@ -136,41 +174,76 @@ export function AgentDashboard() {
         <div className="agent-side-card agent-card">
           <p className="agent-eyebrow">Live route</p>
           <h2>Current execution</h2>
-          <p>
-            {state.current_path && state.current_path.length > 0
-              ? state.current_path.join(" → ")
-              : "No active path."}
+          <p className="agent-live-path">
+            {livePath.length > 0
+              ? livePath.join(" → ")
+              : state.current_path && state.current_path.length > 0
+                ? state.current_path.join(" → ")
+                : "No active path."}
           </p>
 
-          <h3>Quarantined links</h3>
-          {state.quarantined_links &&
-          state.quarantined_links.length > 0 ? (
-            <ul>
-              {state.quarantined_links.map((link) => (
-                <li key={link}>{link}</li>
-              ))}
-            </ul>
-          ) : (
-            <p className="agent-empty">None</p>
-          )}
-
-          {state.last_error && (
-            <>
-              <h3>Last error</h3>
-              <p className="agent-error">{state.last_error}</p>
-            </>
-          )}
+          <div className="agent-live-hops">
+            {liveHops.length === 0 && <p className="agent-empty">Waiting for execution stream...</p>}
+            {liveHops.map((hop, index) => {
+              const isExpanded = expandedHopIndex === index;
+              return (
+                <div key={`${hop.tick}-${index}`} className={`agent-live-hop-item live-enter ${isExpanded ? "is-expanded" : ""}`}>
+                  <div 
+                    className="agent-live-hop-header" 
+                    onClick={() => report && setExpandedHopIndex(isExpanded ? null : index)}
+                    style={{ cursor: report ? "pointer" : "default" }}
+                  >
+                    <strong>{hop.current_planet}</strong> 
+                    <span className="arrow">→</span> 
+                    <strong>{hop.next_planet || "?"}</strong>
+                    <span className={`agent-status-pill ${hop.action.toLowerCase()}`}>{hop.action}</span>
+                    {report && (
+                      <span className="agent-chevron">{isExpanded ? "▲" : "▼"}</span>
+                    )}
+                  </div>
+                  <div className="agent-live-hop-body">
+                    <div className="agent-live-hop-metrics">
+                      <div>
+                        <span>Cost</span>
+                        <strong>{hop.evaluation.combined_cost.toFixed(1)}</strong>
+                      </div>
+                      <div>
+                        <span>Trust</span>
+                        <strong>{hop.evaluation.trust_score.toFixed(2)}</strong>
+                      </div>
+                      <div>
+                        <span>Risk</span>
+                        <strong>{hop.evaluation.targeting_risk_score.toFixed(2)}</strong>
+                      </div>
+                    </div>
+                    {hop.reasons && hop.reasons.length > 0 && (
+                      <div className="agent-live-hop-context">
+                        <span className="agent-live-hop-context-label">Decision context:</span>
+                        <ul className="agent-live-hop-reasons">
+                          {hop.reasons.map((r, i) => <li key={i}>{r}</li>)}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      <LinkEvaluationTable
-        evaluations={report?.link_evaluations ?? []}
-      />
+      {report && (
+        <div className="agent-dashboard-results">
+          <LinkEvaluationTable
+            evaluations={report.link_evaluations ?? []}
+          />
 
-      <div className="agent-dashboard-grid agent-dashboard-grid-equal">
-        <DecisionAuditLog records={audit} />
-        <PacketTimeline entries={timeline} />
-      </div>
+          <div className="agent-dashboard-grid agent-dashboard-grid-equal">
+            <DecisionAuditLog records={audit} />
+            <PacketTimeline entries={timeline} />
+          </div>
+        </div>
+      )}
     </section>
   );
 }

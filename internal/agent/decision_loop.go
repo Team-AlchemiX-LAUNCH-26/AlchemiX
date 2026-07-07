@@ -3,6 +3,7 @@ package agent
 import (
 	"context"
 	"fmt"
+	"time"
 )
 
 // DecisionLoop implements the hop-by-hop sequential decision process (§9).
@@ -12,9 +13,10 @@ type DecisionLoop struct {
 	trust       TrustModel
 	targeting   TargetingModel
 	stateProvider StateProvider
-	costCalc    *TrueCostCalculator
-	policy      *PolicyEngine
-	usage       UsageHistory
+	costCalc      *TrueCostCalculator
+	policy        *PolicyEngine
+	usage         UsageHistory
+	OnHop         func(context.Context, HopDecision)
 }
 
 // NewDecisionLoop creates a decision loop with all required components.
@@ -161,7 +163,16 @@ func (dl *DecisionLoop) RunFullRoute(
 		})
 
 		if action == ActionQueue {
+			if dl.OnHop != nil {
+				dl.OnHop(ctx, hopDecisions[len(hopDecisions)-1])
+				time.Sleep(3 * time.Second)
+			}
 			break
+		}
+
+		if dl.OnHop != nil {
+			dl.OnHop(ctx, hopDecisions[len(hopDecisions)-1])
+			time.Sleep(3 * time.Second)
 		}
 
 		chosenPath = append(chosenPath, chosen.NextPlanet)

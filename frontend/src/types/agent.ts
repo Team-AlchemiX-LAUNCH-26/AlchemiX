@@ -28,6 +28,17 @@ export interface LinkEvaluation {
   reasons?: string[];
 }
 
+export interface HopDecision {
+  tick: number;
+  current_planet: string;
+  next_planet: string;
+  link_id: string;
+  action: AgentAction;
+  evaluation: LinkEvaluation;
+  reasons: string[];
+  alternative_path?: string[];
+}
+
 export interface AgentDecisionReport {
   origin_id: string;
   destination_id: string;
