@@ -30,6 +30,8 @@ import { TowerInspector } from "./components/TowerInspector";
 import { LatencyPanel } from "./components/LatencyPanel";
 import { HopLogTable } from "./components/HopLogTable";
 import { ConversionHistory } from "./components/ConversionHistory";
+import { AgentDashboard } from "./components/AgentDashboard";
+import "./styles/agent.css";
 
 type SpaceStyle = CSSProperties & {
   "--star-drift-x"?: string;
@@ -563,6 +565,8 @@ export default function App() {
             </article>
           </section>
         )}
+
+        <AgentDashboard />
       </main>
     </>
   );

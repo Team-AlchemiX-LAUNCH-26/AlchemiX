@@ -22,7 +22,7 @@ func TestDistributedThreeNodeTransmission(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	graph, err := routing.BuildGraph(cfg, map[string]bool{}, map[string]bool{})
+	graph, err := routing.BuildGraph(cfg, map[string]bool{}, map[string]bool{}, map[string]map[int]bool{})
 	if err != nil {
 		t.Fatal(err)
 	}

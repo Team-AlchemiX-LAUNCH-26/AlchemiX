@@ -1,0 +1,118 @@
+{
+  "generated_at": "2026-07-07T15:54:09.956807+00:00",
+  "models": {
+    "congestion_model.json": {
+      "task": "congestion_regressor",
+      "version": "2.0.0",
+      "features": [
+        "load_ratio",
+        "load_units",
+        "capacity_units",
+        "link_id_encoded",
+        "previous_load_ratio",
+        "load_ratio_change",
+        "rolling_mean_load_ratio",
+        "rolling_std_load_ratio",
+        "rate_of_load_increase",
+        "distance_to_saturation",
+        "load_units_missing"
+      ],
+      "metrics": {
+        "val_mae_ms": 17521.1512,
+        "val_rmse_ms": 98609.3473,
+        "val_medae_ms": 4309.7821,
+        "val_n_samples": 858,
+        "train_n_samples": 4023,
+        "saturated_train": 2,
+        "saturated_val": 1,
+        "saturated_test": 0,
+        "error_by_load_band": {
+          "0.00-0.50": {
+            "n": 725,
+            "mae_ms": 6985.984308838837
+          },
+          "0.50-0.75": {
+            "n": 123,
+            "mae_ms": 36618.544846756144
+          },
+          "0.75-0.90": {
+            "n": 10,
+            "mae_ms": 546422.8081290955
+          }
+        },
+        "selected_model": "HGBR(l_rate=0.10,depth=5)"
+      },
+      "dataset_hash": "61c62f57ec7d183c"
+    },
+    "trust_model.json": {
+      "task": "trust_regressor",
+      "version": "2.0.0",
+      "features": [
+        "self_reported_latency_ms",
+        "self_reported_latency_missing",
+        "physical_latency_ms",
+        "self_to_physical_ratio",
+        "deviation_from_baseline",
+        "prev_self_reported",
+        "self_reported_change",
+        "rolling_self_reported",
+        "historical_bias",
+        "below_physical_min",
+        "link_id_encoded"
+      ],
+      "metrics": {
+        "val_mae": 0.04316,
+        "val_rmse": 0.086433,
+        "spoof_precision": 0.6516,
+        "spoof_recall": 0.8632,
+        "fp_rate_honest": 0.069,
+        "spoof_threshold": 0.15,
+        "trust_scale": 0.5,
+        "selected_model": "HGBR(lr=0.05,d=4)"
+      },
+      "dataset_hash": "f52fb59c227ab7fb"
+    },
+    "targeting_model.json": {
+      "task": "targeting_classifier",
+      "version": "2.0.0",
+      "features": [
+        "traffic_share",
+        "traffic_share_missing",
+        "traffic_share_rank",
+        "prev_traffic_share",
+        "traffic_share_change",
+        "rolling_traffic_share",
+        "historical_jam_rate",
+        "rolling_jam_count",
+        "consecutive_high_usage",
+        "link_id_encoded"
+      ],
+      "metrics": {
+        "val_roc_auc": 0.5511,
+        "val_pr_auc": -0.0418,
+        "val_brier": 0.0722,
+        "val_precision": 0.0,
+        "val_recall": 0.0,
+        "calibration_threshold": 0.5,
+        "platt_a": -1.358259,
+        "platt_b": 2.842998,
+        "calibration_bins": [
+          {
+            "bin": "0.00-0.20",
+            "n": 900,
+            "mean_predicted": 0.0789,
+            "mean_true": 0.0789
+          }
+        ],
+        "class_distribution": {
+          "train_jammed": 343,
+          "train_not_jammed": 3845,
+          "val_jammed": 71,
+          "val_not_jammed": 829
+        },
+        "selected_model": "HGBC(lr=0.10,d=5)"
+      },
+      "dataset_hash": "26bca83b65dace37"
+    }
+  }
+}

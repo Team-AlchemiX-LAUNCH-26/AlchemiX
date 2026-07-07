@@ -1,0 +1,57 @@
+package agenttest
+
+// Rename this file to harness_local_test.go and adapt the real repository
+// types below.
+//
+// The adapter should:
+// 1. Convert Scenario.Snapshots into the actual mock StateProvider.
+// 2. Construct the real analytical Agent.
+// 3. Run Agent.Execute.
+// 4. Convert the agent report, audit, and reliable-transmission state into the
+//    local DecisionReport used by the black-box tests.
+
+import (
+	"context"
+	"testing"
+
+	// Replace with the real module path:
+	// phase2agent "YOUR_MODULE_PATH/internal/agent"
+)
+
+type realHarness struct {
+	// agent *phase2agent.Agent
+}
+
+func newHarness(t *testing.T) Harness {
+	t.Helper()
+
+	// Construct all dependencies here:
+	// - mock state provider backed by Scenario.Snapshots
+	// - model implementations or deterministic test doubles
+	// - router adapter
+	// - candidate generator
+	// - reliable transmitter
+	// - audit logger
+
+	return &realHarness{}
+}
+
+func (h *realHarness) Run(
+	ctx context.Context,
+	naturalLanguageRequest string,
+	scenario Scenario,
+) (DecisionReport, error) {
+	// stateProvider := NewScenarioStateProvider(scenario)
+	// h.agent.SetStateProvider(stateProvider)
+	// result, err := h.agent.Execute(ctx, naturalLanguageRequest)
+	// if err != nil { return DecisionReport{}, err }
+	//
+	// return DecisionReport{
+	//     OriginID: result.OriginID,
+	//     DestinationID: result.DestinationID,
+	//     ChosenPath: result.ChosenPath,
+	//     ...
+	// }, nil
+
+	panic("wire realHarness.Run to the repository Agent")
+}

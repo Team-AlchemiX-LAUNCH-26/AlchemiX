@@ -413,6 +413,208 @@ export namespace domain {
 
 }
 
+export namespace main {
+	
+	export class AgentStateDTO {
+	    status: string;
+	    current_tick: number;
+	    current_planet?: string;
+	    destination_planet?: string;
+	    active_message_id?: string;
+	    last_confirmed_planet?: string;
+	    current_path?: string[];
+	    queued_packets: number;
+	    quarantined_links?: string[];
+	    last_error?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new AgentStateDTO(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.status = source["status"];
+	        this.current_tick = source["current_tick"];
+	        this.current_planet = source["current_planet"];
+	        this.destination_planet = source["destination_planet"];
+	        this.active_message_id = source["active_message_id"];
+	        this.last_confirmed_planet = source["last_confirmed_planet"];
+	        this.current_path = source["current_path"];
+	        this.queued_packets = source["queued_packets"];
+	        this.quarantined_links = source["quarantined_links"];
+	        this.last_error = source["last_error"];
+	    }
+	}
+	export class AuditRecordDTO {
+	    audit_id: string;
+	    tick: number;
+	    current_planet: string;
+	    link_id: string;
+	    action: string;
+	    physical_latency_ms: number;
+	    predicted_congestion_penalty_ms: number;
+	    trust_score: number;
+	    targeting_risk_score: number;
+	    uncertainty_score: number;
+	    combined_cost: number;
+	    reasons: string[];
+	    alternative_path?: string[];
+	    timestamp?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new AuditRecordDTO(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.audit_id = source["audit_id"];
+	        this.tick = source["tick"];
+	        this.current_planet = source["current_planet"];
+	        this.link_id = source["link_id"];
+	        this.action = source["action"];
+	        this.physical_latency_ms = source["physical_latency_ms"];
+	        this.predicted_congestion_penalty_ms = source["predicted_congestion_penalty_ms"];
+	        this.trust_score = source["trust_score"];
+	        this.targeting_risk_score = source["targeting_risk_score"];
+	        this.uncertainty_score = source["uncertainty_score"];
+	        this.combined_cost = source["combined_cost"];
+	        this.reasons = source["reasons"];
+	        this.alternative_path = source["alternative_path"];
+	        this.timestamp = source["timestamp"];
+	    }
+	}
+	export class LinkEvaluationDTO {
+	    link_id: string;
+	    physical_latency_ms?: number;
+	    predicted_congestion_penalty_ms: number;
+	    trust_score: number;
+	    targeting_risk_score: number;
+	    uncertainty_score?: number;
+	    combined_cost: number;
+	    action?: string;
+	    reasons?: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new LinkEvaluationDTO(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.link_id = source["link_id"];
+	        this.physical_latency_ms = source["physical_latency_ms"];
+	        this.predicted_congestion_penalty_ms = source["predicted_congestion_penalty_ms"];
+	        this.trust_score = source["trust_score"];
+	        this.targeting_risk_score = source["targeting_risk_score"];
+	        this.uncertainty_score = source["uncertainty_score"];
+	        this.combined_cost = source["combined_cost"];
+	        this.action = source["action"];
+	        this.reasons = source["reasons"];
+	    }
+	}
+	export class DecisionReportDTO {
+	    origin_id: string;
+	    destination_id: string;
+	    parsed_payload?: string;
+	    baseline_path?: string[];
+	    chosen_path: string[];
+	    link_evaluations: LinkEvaluationDTO[];
+	    final_latency_estimate_ms: number;
+	    explanation: string;
+	    status?: string;
+	    confidence?: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new DecisionReportDTO(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.origin_id = source["origin_id"];
+	        this.destination_id = source["destination_id"];
+	        this.parsed_payload = source["parsed_payload"];
+	        this.baseline_path = source["baseline_path"];
+	        this.chosen_path = source["chosen_path"];
+	        this.link_evaluations = this.convertValues(source["link_evaluations"], LinkEvaluationDTO);
+	        this.final_latency_estimate_ms = source["final_latency_estimate_ms"];
+	        this.explanation = source["explanation"];
+	        this.status = source["status"];
+	        this.confidence = source["confidence"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
+	export class PacketTimelineEntryDTO {
+	    message_id: string;
+	    packet_id: string;
+	    sequence_number: number;
+	    total_packets: number;
+	    state: string;
+	    planet_id?: string;
+	    link_id?: string;
+	    route_version: number;
+	    retry_count: number;
+	    tick: number;
+	    detail?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new PacketTimelineEntryDTO(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.message_id = source["message_id"];
+	        this.packet_id = source["packet_id"];
+	        this.sequence_number = source["sequence_number"];
+	        this.total_packets = source["total_packets"];
+	        this.state = source["state"];
+	        this.planet_id = source["planet_id"];
+	        this.link_id = source["link_id"];
+	        this.route_version = source["route_version"];
+	        this.retry_count = source["retry_count"];
+	        this.tick = source["tick"];
+	        this.detail = source["detail"];
+	    }
+	}
+	export class ParsedTransmissionRequestDTO {
+	    origin_id: string;
+	    destination_id: string;
+	    payload: string;
+	    confidence: number;
+	    ambiguities: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new ParsedTransmissionRequestDTO(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.origin_id = source["origin_id"];
+	        this.destination_id = source["destination_id"];
+	        this.payload = source["payload"];
+	        this.confidence = source["confidence"];
+	        this.ambiguities = source["ambiguities"];
+	    }
+	}
+
+}
+
 export namespace protocol {
 	
 	export class TransmissionRequest {
