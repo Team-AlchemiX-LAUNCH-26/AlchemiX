@@ -10,9 +10,9 @@ frontend/dist/
 build/bin/
 
 # Environment
-.env
 
 # Editors / OS
-.vscode/settings.json
 .DS_Store
 Thumbs.db
+config.bat
+node_modules

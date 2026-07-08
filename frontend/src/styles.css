@@ -316,7 +316,7 @@ textarea:disabled {
 .app-header h1 {
   margin: 6px 0 0;
 
-  color: #ffffff;
+  color: var(--color-text);
 
   font-family: Oswald, sans-serif;
   font-weight: 700;
@@ -345,7 +345,7 @@ textarea:disabled {
   border: 1px solid var(--border-bright);
   border-radius: var(--radius-sm);
 
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--color-panel-soft);
   color: var(--text-secondary);
 
   font-size: 11px;
@@ -441,7 +441,7 @@ textarea:disabled {
   background: radial-gradient(
     circle at center,
     rgba(255, 255, 255, 0.045),
-    rgba(5, 5, 5, 0.98) 68%
+    var(--color-bg) 68%
   );
 }
 
@@ -455,7 +455,7 @@ textarea:disabled {
 }
 
 .link {
-  stroke: #304262;
+  stroke: var(--color-line-strong);
   stroke-width: 1.6;
   opacity: 0.75;
 }
@@ -465,11 +465,11 @@ textarea:disabled {
   stroke-width: 3.4;
   opacity: 1;
 
-  filter: drop-shadow(0 0 7px rgba(34, 211, 238, 0.85));
+  filter: drop-shadow(0 0 7px rgba(38, 71, 255, 0.85));
 }
 
 .planet {
-  stroke: rgba(255, 255, 255, 0.55);
+  stroke: var(--color-text-dim);
   stroke-width: 1.5;
 
   transition:
@@ -482,7 +482,7 @@ textarea:disabled {
   stroke: var(--accent-bright);
   stroke-width: 3;
 
-  filter: drop-shadow(0 0 9px rgba(34, 211, 238, 0.65));
+  filter: drop-shadow(0 0 9px rgba(38, 71, 255, 0.65));
 }
 
 .planet-selected {
@@ -518,7 +518,7 @@ textarea:disabled {
 }
 
 .planet.failed {
-  fill: #3a0d0d;
+  fill: rgba(255, 102, 125, 0.1);
   stroke: var(--accent-bright);
 }
 
@@ -529,7 +529,7 @@ textarea:disabled {
 }
 
 .route-planet {
-  stroke: #ffffff;
+  stroke: var(--color-text);
   stroke-width: 3;
 }
 
@@ -556,8 +556,8 @@ textarea:disabled {
   stroke: var(--green-light);
   stroke-width: 1;
 
-  filter: drop-shadow(0 0 4px rgba(74, 222, 128, 0.9))
-    drop-shadow(0 0 8px rgba(74, 222, 128, 0.35));
+  filter: drop-shadow(0 0 4px rgba(94, 230, 168, 0.9))
+    drop-shadow(0 0 8px rgba(94, 230, 168, 0.35));
 }
 
 .tower-broken {
@@ -565,8 +565,8 @@ textarea:disabled {
   stroke: var(--red-light);
   stroke-width: 1.2;
 
-  filter: drop-shadow(0 0 5px rgba(34, 211, 238, 0.95))
-    drop-shadow(0 0 10px rgba(34, 211, 238, 0.45));
+  filter: drop-shadow(0 0 5px rgba(255, 102, 125, 0.95))
+    drop-shadow(0 0 10px rgba(255, 102, 125, 0.45));
 }
 
 .route-strip {
@@ -629,7 +629,7 @@ textarea:disabled {
 
   outline: none;
 
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--color-bg);
   color: var(--text);
 
   transition:
@@ -642,7 +642,7 @@ textarea:disabled {
 .link-controls select:focus {
   border-color: var(--accent-bright);
 
-  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.16);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
 }
 
 .controls textarea {
@@ -716,7 +716,7 @@ textarea:disabled {
 
 .secondary-button:hover:not(:disabled) {
   border-color: var(--accent-bright);
-  background: rgba(34, 211, 238, 0.08);
+  background: var(--color-accent-soft);
 }
 
 .divider {
@@ -743,10 +743,10 @@ textarea:disabled {
   justify-content: space-between;
   gap: 6px;
 
-  border: 1px solid rgba(74, 222, 128, 0.4);
+  border: 1px solid rgba(94, 230, 168, 0.4);
   border-radius: var(--radius-sm);
 
-  background: rgba(74, 222, 128, 0.06);
+  background: rgba(94, 230, 168, 0.06);
   color: var(--green-light);
 
   font-size: 10px;
@@ -759,7 +759,7 @@ textarea:disabled {
 }
 
 .node-button span {
-  color: #8fd6ab;
+  color: var(--color-success);
 
   font-size: 9px;
   text-transform: uppercase;
@@ -767,23 +767,23 @@ textarea:disabled {
 
 .node-button:hover:not(:disabled) {
   border-color: var(--green);
-  background: rgba(74, 222, 128, 0.14);
+  background: rgba(94, 230, 168, 0.14);
 }
 
 .node-button.danger {
-  border-color: rgba(34, 211, 238, 0.55);
+  border-color: rgba(255, 102, 125, 0.55);
 
-  background: rgba(34, 211, 238, 0.1);
-  color: #fecdd3;
+  background: rgba(255, 102, 125, 0.1);
+  color: var(--color-danger);
 }
 
 .node-button.danger span {
-  color: #f3a3a3;
+  color: var(--color-danger);
 }
 
 .node-button.danger:hover:not(:disabled) {
   border-color: var(--accent-bright);
-  background: rgba(34, 211, 238, 0.2);
+  background: rgba(255, 102, 125, 0.2);
 }
 
 /* Link controls */
@@ -810,23 +810,23 @@ textarea:disabled {
 .break-link-button {
   border: 1px solid var(--accent-bright);
 
-  background: rgba(34, 211, 238, 0.16);
+  background: var(--color-accent-soft);
 }
 
 .break-link-button:hover:not(:disabled) {
-  border-color: #ffffff;
+  border-color: var(--color-text);
   background: var(--accent-dark);
 }
 
 .restore-link-button {
-  border: 1px solid rgba(74, 222, 128, 0.5);
+  border: 1px solid rgba(94, 230, 168, 0.5);
 
-  background: rgba(74, 222, 128, 0.1);
+  background: rgba(94, 230, 168, 0.1);
 }
 
 .restore-link-button:hover:not(:disabled) {
   border-color: var(--green);
-  background: rgba(74, 222, 128, 0.22);
+  background: rgba(94, 230, 168, 0.22);
 }
 
 /* Results appearing after transmission */
