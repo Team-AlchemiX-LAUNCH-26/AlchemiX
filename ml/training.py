@@ -209,12 +209,38 @@ def regression_candidates(seed: int = RANDOM_SEED) -> dict[str, Any]:
     }
 
 
-def classification_candidates(seed: int = RANDOM_SEED) -> dict[str, Any]:
+def classification_candidates(
+    seed: int = RANDOM_SEED,
+    scale_pos_weight: float = 1.0,
+) -> dict[str, Any]:
+    """
+    Return balanced classification candidates.
+
+    Parameters
+    ----------
+    scale_pos_weight : float
+        Ratio of negative to positive samples (n_neg / n_pos).
+        Pass ``y_train`` value counts to compute:
+            ``(y == 0).sum() / (y == 1).sum()``
+        Used by XGBoost; RandomForest and LightGBM use class_weight='balanced'.
+    """
     return {
-        "RandomForest": RandomForestClassifier(random_state=seed, n_jobs=-1),
-        "XGBoost":      xgb.XGBClassifier(random_state=seed, n_jobs=-1, verbosity=0),
-        "LightGBM":     lgb.LGBMClassifier(random_state=seed, n_jobs=-1, verbose=-1),
-        "DecisionTree": DecisionTreeClassifier(random_state=seed),
+        "RandomForest": RandomForestClassifier(
+            random_state=seed, n_jobs=-1,
+            class_weight="balanced",          # weights inversely proportional to class freq
+        ),
+        "XGBoost": xgb.XGBClassifier(
+            random_state=seed, n_jobs=-1, verbosity=0,
+            scale_pos_weight=scale_pos_weight,  # ratio of neg/pos samples
+        ),
+        "LightGBM": lgb.LGBMClassifier(
+            random_state=seed, n_jobs=-1, verbose=-1,
+            is_unbalance=True,                # LightGBM's built-in balancing
+        ),
+        "DecisionTree": DecisionTreeClassifier(
+            random_state=seed,
+            class_weight="balanced",
+        ),
     }
 
 
@@ -291,16 +317,26 @@ REGRESSION_PARAM_GRIDS: dict[str, dict] = {
 }
 
 CLASSIFICATION_PARAM_GRIDS: dict[str, dict] = {
-    "RandomForest": REGRESSION_PARAM_GRIDS["RandomForest"],
+    "RandomForest": {
+        **REGRESSION_PARAM_GRIDS["RandomForest"],
+        # class_weight is fixed to 'balanced' in classification_candidates()
+        # — do not search it here (would override the constructor value).
+    },
     "XGBoost": {
         **REGRESSION_PARAM_GRIDS["XGBoost"],
-        "scale_pos_weight": [1, 2, 3, 5],
+        # scale_pos_weight is set at construction time from the actual ratio;
+        # search extra multipliers around that value.
+        "scale_pos_weight": [5, 8, 11, 15, 20],
     },
     "LightGBM": {
         **REGRESSION_PARAM_GRIDS["LightGBM"],
-        "is_unbalance": [True, False],
+        # is_unbalance is fixed True in classification_candidates() — do not override.
+        "min_child_samples": [5, 10, 20],
     },
-    "DecisionTree": REGRESSION_PARAM_GRIDS["DecisionTree"],
+    "DecisionTree": {
+        **REGRESSION_PARAM_GRIDS["DecisionTree"],
+        # class_weight is fixed to 'balanced' in classification_candidates().
+    },
 }
 
 

@@ -3,12 +3,9 @@
     "numeric": [
       "load_units",
       "load_ratio",
-      "load_percentage",
       "load_ratio_sq",
       "load_units_x_ratio",
       "near_capacity",
-      "high_congestion",
-      "status_ok",
       "hist_mean_load_ratio",
       "hist_std_load_ratio",
       "hist_mean_load_units"
@@ -17,7 +14,19 @@
       "planet_a",
       "planet_b"
     ],
-    "target": "observed_latency_ms"
+    "target": "observed_latency_ms",
+    "train_score": {
+      "MAE": 12924.92576278842,
+      "RMSE": 37787.17595204233,
+      "R2": 0.94707223766511,
+      "MAPE_%": 7.582488127708964
+    },
+    "test_score": {
+      "MAE": 13870.054016318538,
+      "RMSE": 54646.3549970243,
+      "R2": 0.8916803190457199,
+      "MAPE_%": 8.157960267911914
+    }
   },
   "trust": {
     "numeric": [
@@ -35,20 +44,45 @@
       "planet_a",
       "planet_b"
     ],
-    "target": "trust_score"
+    "target": "trust_score",
+    "train_score": {
+      "MAE": 0.00017157923837859818,
+      "RMSE": 0.0006757172665516597,
+      "R2": 0.9999518435059097,
+      "MAPE_%": 0.0223031749002518
+    },
+    "test_score": {
+      "MAE": 0.00027424930179646554,
+      "RMSE": 0.0009106855091780352,
+      "R2": 0.9999168668362816,
+      "MAPE_%": 0.036331205373513496
+    }
   },
   "targeting": {
     "numeric": [
       "traffic_share",
       "traffic_percentage",
       "high_traffic_share",
-      "relative_traffic",
       "hist_attack_rate"
     ],
     "categorical": [
       "planet_a",
       "planet_b"
     ],
-    "target": "jammed_flag"
+    "target": "jammed_flag",
+    "train_score": {
+      "Accuracy": 0.7110416666666667,
+      "Precision": 0.14911660777385158,
+      "Recall": 0.5355329949238579,
+      "F1": 0.23327805417357655,
+      "ROC_AUC": 0.6699894122228343
+    },
+    "test_score": {
+      "Accuracy": 0.7016666666666667,
+      "Precision": 0.12893982808022922,
+      "Recall": 0.45454545454545453,
+      "F1": 0.20089285714285715,
+      "ROC_AUC": 0.5837393003605539
+    }
   }
 }

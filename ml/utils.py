@@ -43,9 +43,25 @@ TRAFFIC_CLEAN_FILE: Path     = CLEANED_DIR / "traffic_clean.csv"
 TELEMETRY_CLEAN_FILE: Path   = CLEANED_DIR / "telemetry_clean.csv"
 INCIDENT_CLEAN_FILE: Path    = CLEANED_DIR / "incident_clean.csv"
 
+# Train / Test splits (written by Notebook 02, read by Notebook 03)
+TRAFFIC_TRAIN_CLEAN: Path    = CLEANED_DIR / "traffic_train.csv"
+TRAFFIC_TEST_CLEAN: Path     = CLEANED_DIR / "traffic_test.csv"
+TELEMETRY_TRAIN_CLEAN: Path  = CLEANED_DIR / "telemetry_train.csv"
+TELEMETRY_TEST_CLEAN: Path   = CLEANED_DIR / "telemetry_test.csv"
+INCIDENT_TRAIN_CLEAN: Path   = CLEANED_DIR / "incident_train.csv"
+INCIDENT_TEST_CLEAN: Path    = CLEANED_DIR / "incident_test.csv"
+
 TRAFFIC_ENG_FILE: Path       = ENGINEERED_DIR / "traffic_engineered.csv"
 TELEMETRY_ENG_FILE: Path     = ENGINEERED_DIR / "telemetry_engineered.csv"
 INCIDENT_ENG_FILE: Path      = ENGINEERED_DIR / "incident_engineered.csv"
+
+# Engineered train / test splits (written by Notebook 03, read by Notebook 04)
+TRAFFIC_TRAIN_ENG: Path      = ENGINEERED_DIR / "traffic_train_eng.csv"
+TRAFFIC_TEST_ENG: Path       = ENGINEERED_DIR / "traffic_test_eng.csv"
+TELEMETRY_TRAIN_ENG: Path    = ENGINEERED_DIR / "telemetry_train_eng.csv"
+TELEMETRY_TEST_ENG: Path     = ENGINEERED_DIR / "telemetry_test_eng.csv"
+INCIDENT_TRAIN_ENG: Path     = ENGINEERED_DIR / "incident_train_eng.csv"
+INCIDENT_TEST_ENG: Path      = ENGINEERED_DIR / "incident_test_eng.csv"
 
 
 # ── Model file names ─────────────────────────────────────────────────────────
