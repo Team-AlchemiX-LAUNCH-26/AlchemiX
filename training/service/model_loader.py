@@ -30,11 +30,23 @@ class PythonModelStore:
         return json.loads(path.read_text())
 
     def link_id_map(self) -> dict[str, int]:
-        path = self.model_dir / "congestion_model.json"
-        if not path.exists():
-            return {}
-        model = json.loads(path.read_text())
-        return model.get("link_id_map", {})
+        cfg = self._load_universe_config()
+        link_ids = sorted(link["link_id"] for link in cfg["interplanetary_links"])
+        return {link_id: index for index, link_id in enumerate(link_ids)}
+
+    def _load_universe_config(self) -> dict[str, Any]:
+        root = self.model_dir.resolve().parent.parent
+        candidates = [
+            root / "datasets" / "universe-config.json",
+            root / "configs" / "universe-config.json",
+            Path.cwd() / "datasets" / "universe-config.json",
+            Path.cwd() / "configs" / "universe-config.json",
+        ]
+        for path in candidates:
+            if path.exists():
+                return json.loads(path.read_text())
+        searched = ", ".join(str(path) for path in candidates)
+        raise FileNotFoundError(f"Missing universe-config.json. Searched: {searched}")
 
     def model_info(self) -> dict[str, Any]:
         return {

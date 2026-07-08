@@ -35,16 +35,25 @@ wails doctor
 git clone <your-repository-url>
 cd relic-ring-protocol
 go mod tidy
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r training\requirements.txt
+python -B -m uvicorn training.service.app:app --host 127.0.0.1 --port 8100
+```
+
+Keep the FastAPI ML service running. Open a second terminal:
+
+```powershell
 cd frontend
 npm install
 cd ..
 docker compose -f deployments/docker/compose.yaml up --build
 ```
 
-Keep Docker running. Open a second VS Code terminal:
+Keep Docker running. Open a third VS Code terminal:
 
 ```powershell
-wails dev
+wails dev -skipbindings -tags native_webview2loader
 ```
 
 The desktop app connects to `http://localhost:8080`.
@@ -117,7 +126,23 @@ python evaluate_all.py
 python -m pytest tests
 ```
 
-The trainers export Go-compatible JSON models to `internal/models/`; `evaluate_all.py` also writes `internal/models/model_manifest.json` and summary reports under `training/reports/`. The staged notebook workflow starts at `training/notebooks/01_EDA.ipynb` and continues through `06_Model_Export.ipynb`; keep training/export logic in scripts so artifacts remain reproducible.
+The trainers export both legacy Go-compatible JSON models and Python `.joblib` models to `internal/models/`. The active Go desktop/backend runtime calls the Python FastAPI prediction service, so it uses the best validation `.joblib` models, including non-HistGradientBoosting winners such as the congestion Gradient Boosting model and targeting Logistic Regression model. The JSON model files are retained only for legacy inspection/export compatibility.
+
+Start the ML service before running the desktop app:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python -B -m uvicorn training.service.app:app --host 127.0.0.1 --port 8100
+```
+
+If the service runs on another port, point Go/Wails to it:
+
+```powershell
+$env:ML_SERVICE_URL = "http://127.0.0.1:8101"
+wails dev -skipbindings -tags native_webview2loader
+```
+
+`evaluate_all.py` writes `internal/models/model_manifest.json` and summary reports under `training/reports/`. The staged notebook workflow starts at `training/notebooks/01_EDA.ipynb` and continues through `06_Model_Export.ipynb`; keep training/export logic in scripts so artifacts remain reproducible.
 
 ## Important implementation details
 

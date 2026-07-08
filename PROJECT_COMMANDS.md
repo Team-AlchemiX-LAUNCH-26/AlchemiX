@@ -81,6 +81,13 @@ Or run on another port:
 python -B -m uvicorn training.service.app:app --host 127.0.0.1 --port 8101
 ```
 
+When using a non-default FastAPI port, set the Go/Wails backend URL before launching:
+
+```powershell
+$env:ML_SERVICE_URL = "http://127.0.0.1:8101"
+wails dev -skipbindings -tags native_webview2loader
+```
+
 ## Frontend
 
 Install dependencies and build:
@@ -116,8 +123,14 @@ wails doctor
 Run the desktop app:
 
 ```powershell
-wails dev
+wails dev -skipbindings -tags native_webview2loader
 ```
+
+The desktop/backend agent expects the FastAPI ML service at `http://127.0.0.1:8100` by default. Start the service first, or set `ML_SERVICE_URL` to the URL you are using.
+
+Use `-skipbindings` because the ML integration changes backend internals only. The exposed Wails methods did not change, so regenerating `frontend/wailsjs` is unnecessary.
+
+Use `-tags native_webview2loader` on this Windows setup because the newer Wails WebView2 loader can compile successfully but fail to show the desktop window.
 
 ## Docker Network
 
@@ -149,5 +162,5 @@ docker compose -f deployments/docker/compose.yaml up --build
 Terminal 3, desktop app:
 
 ```powershell
-wails dev
+wails dev -skipbindings -tags native_webview2loader
 ```

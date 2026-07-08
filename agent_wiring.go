@@ -23,10 +23,12 @@ import (
 //
 // ------------------------------------------------------------------
 // LIVE API KEY INTEGRATION:
-//   Set the following environment variables before launching the app:
-//     CHIMERA_API_KEY=<your-api-key>
-//     CHIMERA_BASE_URL=https://chimera.launch26.space
-//   Without CHIMERA_API_KEY the mock state provider will be used.
+//
+//	Set the following environment variables before launching the app:
+//	  CHIMERA_API_KEY=<your-api-key>
+//	  CHIMERA_BASE_URL=https://chimera.launch26.space
+//	Without CHIMERA_API_KEY the mock state provider will be used.
+//
 // ------------------------------------------------------------------
 func buildAgentBindings() (AgentBindings, error) {
 	cfg, err := agentpkg.LoadConfig("configs/agent_config.json")
@@ -36,19 +38,13 @@ func buildAgentBindings() (AgentBindings, error) {
 
 	planets, links, baselines, capacities := loadTopology()
 
-	modelsDir := "internal/models"
-	congestion, err := intelligence.NewCongestionPredictor(modelsDir + "/congestion_model.json")
-	if err != nil {
-		log.Printf("WARNING: failed to load congestion model: %v (predictions will be zero)", err)
+	mlServiceURL := os.Getenv("ML_SERVICE_URL")
+	if err := intelligence.CheckPythonModelService(mlServiceURL); err != nil {
+		return AgentBindings{}, err
 	}
-	trust, err := intelligence.NewTrustScorer(modelsDir + "/trust_model.json")
-	if err != nil {
-		log.Printf("WARNING: failed to load trust model: %v (predictions will be zero)", err)
-	}
-	targeting, err := intelligence.NewTargetingScorer(modelsDir + "/targeting_model.json")
-	if err != nil {
-		log.Printf("WARNING: failed to load targeting model: %v (predictions will be zero)", err)
-	}
+	mlServiceURL = intelligence.PythonServiceURL(mlServiceURL)
+	congestion, trust, targeting := intelligence.NewPythonModelClients(mlServiceURL)
+	log.Printf("ML predictions are served by required Python FastAPI at %s", mlServiceURL)
 
 	apiKey := os.Getenv("CHIMERA_API_KEY")
 	baseURL := os.Getenv("CHIMERA_BASE_URL")
@@ -183,8 +179,8 @@ func buildAgentBindings() (AgentBindings, error) {
 
 		State: func() AgentStateDTO {
 			return AgentStateDTO{
-				Status:       "READY",
-				CurrentTick:  time.Now().Unix() % 10000,
+				Status:        "READY",
+				CurrentTick:   time.Now().Unix() % 10000,
 				QueuedPackets: 0,
 			}
 		},
@@ -234,7 +230,10 @@ func buildAgentBindings() (AgentBindings, error) {
 }
 
 // linkTopo is a private helper for topology loading.
-type linkTopo struct{ from, to string; latencyMS float64 }
+type linkTopo struct {
+	from, to  string
+	latencyMS float64
+}
 
 // loadTopology reads the universe config and computes physical latencies.
 func loadTopology() (planets []string, links []linkTopo, baselines, capacities map[string]float64) {

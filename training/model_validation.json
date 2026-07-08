@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T14:54:09.704134+00:00",
+  "generated_at": "2026-07-08T18:00:50.178229+00:00",
   "models": {
     "congestion_model.json": {
       "task": "congestion_regressor",

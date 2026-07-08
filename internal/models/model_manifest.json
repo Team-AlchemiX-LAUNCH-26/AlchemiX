@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T14:54:09.829822+00:00",
+  "generated_at": "2026-07-08T18:00:50.265044+00:00",
   "training_data": {
     "traffic": "link_traffic_history.csv",
     "telemetry": "link_telemetry.csv",

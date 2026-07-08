@@ -440,7 +440,7 @@ training/reports/model_selection_summary.csv
 training/reports/final_test_metrics.json
 ```
 
-JSON artifacts are used by the current Go in-process model evaluator.
+JSON artifacts are retained for compatibility with the older Go in-process HistGradientBoosting evaluator and model inspection. They are not required by the current Go/Wails runtime.
 
 `.joblib` artifacts are used by the Python FastAPI service and can serve non-HistGradientBoosting winners.
 
@@ -482,17 +482,22 @@ targeting_model.joblib  -> Logistic Regression
 
 ## Go Runtime Integration
 
-The Go backend currently loads:
+The Go backend now calls the Python FastAPI prediction service:
 
 ```text
-internal/models/congestion_model.json
-internal/models/trust_model.json
-internal/models/targeting_model.json
+POST http://127.0.0.1:8100/predict/all
 ```
 
-Those JSON files use the HistGradientBoosting tree format because Go has an in-process evaluator for that structure.
+That service loads the `.joblib` artifacts and returns congestion, trust, and targeting predictions in one response. This lets the Go/Wails runtime use the best validation models, including non-HistGradientBoosting winners.
 
-The Python FastAPI service exists to support best-validation models that Go does not currently evaluate directly.
+The default service URL is `http://127.0.0.1:8100`. Override it before launching Go/Wails if needed:
+
+```powershell
+$env:ML_SERVICE_URL = "http://127.0.0.1:8101"
+wails dev -skipbindings -tags native_webview2loader
+```
+
+The JSON artifacts may remain in `internal/models/` for compatibility with the older in-process evaluator and for metadata inspection, but the active runtime path is FastAPI plus `.joblib`. The FastAPI service derives live `link_id_map` values from `datasets/universe-config.json`, not from the JSON model files.
 
 ## Notebooks
 
