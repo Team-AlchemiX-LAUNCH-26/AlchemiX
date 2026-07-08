@@ -1,0 +1,9 @@
+/* agent.css is imported by App.tsx, so no copy-paste is required.
+   Keep these root rules in the existing styles.css to allow the dashboard to
+   appear below the first screen. */
+
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}

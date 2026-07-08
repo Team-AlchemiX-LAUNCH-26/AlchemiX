@@ -1,0 +1,4 @@
+model_family,task,selected_model,best_validation_model,primary_metric_1,primary_metric_1_value,feature_count,dataset_hash
+congestion,congestion_regressor,HistGradientBoosting,Gradient Boosting,val_mae_ms,17787.3489,11,3073b5903981d6bf
+trust,trust_regressor,HistGradientBoosting,HistGradientBoosting,val_mae,0.042811,11,70220057ce46587b
+targeting,targeting_classifier,HistGradientBoosting,Logistic Regression,val_roc_auc,0.5287,10,db5261b71a46e8b9

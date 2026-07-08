@@ -1,0 +1,144 @@
+// 1. Construct the real analytical agent using your existing constructors.
+//
+// analyticalAgent, err := agent.New(...)
+// if err != nil {
+//     log.Fatal(err)
+// }
+//
+// 2. Create the Wails adapter. Convert your internal types into the DTOs
+// declared in agent_app.go.
+//
+// agentApp, err := NewAgentApp(AgentBindings{
+//     Parse: func(raw string) (ParsedTransmissionRequestDTO, error) {
+//         parsed, err := analyticalAgent.Parse(raw)
+//         if err != nil {
+//             return ParsedTransmissionRequestDTO{}, err
+//         }
+//         return ParsedTransmissionRequestDTO{
+//             OriginID: parsed.OriginID,
+//             DestinationID: parsed.DestinationID,
+//             Payload: parsed.Payload,
+//             Confidence: parsed.Confidence,
+//             Ambiguities: parsed.Ambiguities,
+//         }, nil
+//     },
+//     Execute: func(
+//         ctx context.Context,
+//         raw string,
+//     ) (DecisionReportDTO, error) {
+//         report, err := analyticalAgent.Execute(ctx, raw)
+//         if err != nil {
+//             return DecisionReportDTO{}, err
+//         }
+//
+//         evaluations := make(
+//             []LinkEvaluationDTO,
+//             0,
+//             len(report.LinkEvaluations),
+//         )
+//         for _, evaluation := range report.LinkEvaluations {
+//             evaluations = append(evaluations, LinkEvaluationDTO{
+//                 LinkID: evaluation.LinkID,
+//                 PhysicalLatencyMS: evaluation.PhysicalLatencyMS,
+//                 PredictedCongestionPenaltyMS:
+//                     evaluation.PredictedCongestionPenaltyMS,
+//                 TrustScore: evaluation.TrustScore,
+//                 TargetingRiskScore: evaluation.TargetingRiskScore,
+//                 UncertaintyScore: evaluation.UncertaintyScore,
+//                 CombinedCost: evaluation.CombinedCost,
+//                 Action: string(evaluation.Action),
+//                 Reasons: evaluation.Reasons,
+//             })
+//         }
+//
+//         return DecisionReportDTO{
+//             OriginID: report.OriginID,
+//             DestinationID: report.DestinationID,
+//             ParsedPayload: report.ParsedPayload,
+//             BaselinePath: report.BaselinePath,
+//             ChosenPath: report.ChosenPath,
+//             LinkEvaluations: evaluations,
+//             FinalLatencyEstimateMS: report.FinalLatencyEstimateMS,
+//             Explanation: report.Explanation,
+//             Status: string(report.Status),
+//             Confidence: report.Confidence,
+//         }, nil
+//     },
+//     State: func() AgentStateDTO {
+//         state := analyticalAgent.State()
+//         return AgentStateDTO{
+//             Status: string(state.Status),
+//             CurrentTick: state.CurrentTick,
+//             CurrentPlanet: state.CurrentPlanet,
+//             DestinationPlanet: state.DestinationPlanet,
+//             ActiveMessageID: state.ActiveMessageID,
+//             LastConfirmedPlanet: state.LastConfirmedPlanet,
+//             CurrentPath: state.CurrentPath,
+//             QueuedPackets: state.QueuedPackets,
+//             QuarantinedLinks: state.QuarantinedLinks,
+//             LastError: state.LastError,
+//         }
+//     },
+//     Audit: func() []AuditRecordDTO {
+//         records := analyticalAgent.AuditRecords()
+//         result := make([]AuditRecordDTO, 0, len(records))
+//         for _, record := range records {
+//             result = append(result, AuditRecordDTO{
+//                 AuditID: record.AuditID,
+//                 Tick: record.Tick,
+//                 CurrentPlanet: record.CurrentPlanet,
+//                 LinkID: record.LinkID,
+//                 Action: string(record.Action),
+//                 PhysicalLatencyMS: record.PhysicalLatencyMS,
+//                 PredictedCongestionPenaltyMS:
+//                     record.PredictedCongestionPenaltyMS,
+//                 TrustScore: record.TrustScore,
+//                 TargetingRiskScore: record.TargetingRiskScore,
+//                 UncertaintyScore: record.UncertaintyScore,
+//                 CombinedCost: record.CombinedCost,
+//                 Reasons: record.Reasons,
+//                 AlternativePath: record.AlternativePath,
+//                 Timestamp: record.Timestamp.Format(time.RFC3339),
+//             })
+//         }
+//         return result
+//     },
+//     Timeline: func() []PacketTimelineEntryDTO {
+//         entries := analyticalAgent.PacketTimeline()
+//         result := make(
+//             []PacketTimelineEntryDTO,
+//             0,
+//             len(entries),
+//         )
+//         for _, entry := range entries {
+//             result = append(result, PacketTimelineEntryDTO{
+//                 MessageID: entry.MessageID,
+//                 PacketID: entry.PacketID,
+//                 SequenceNumber: entry.SequenceNumber,
+//                 TotalPackets: entry.TotalPackets,
+//                 State: string(entry.State),
+//                 PlanetID: entry.PlanetID,
+//                 LinkID: entry.LinkID,
+//                 RouteVersion: entry.RouteVersion,
+//                 RetryCount: entry.RetryCount,
+//                 Tick: entry.Tick,
+//                 Detail: entry.Detail,
+//             })
+//         }
+//         return result
+//     },
+//     Reset: analyticalAgent.Reset,
+// })
+// if err != nil {
+//     log.Fatal(err)
+// }
+//
+// 3. Add agentApp to the Wails Bind list.
+//
+// Bind: []interface{}{
+//     app,
+//     agentApp,
+// },
+//
+// 4. If the AgentApp lifecycle method is not invoked automatically in your
+// Wails setup, call agentApp.Startup from the main App startup hook.

@@ -1,0 +1,70 @@
+name: relic-ring
+
+x-planet-common: &planet-common
+  build:
+    context: ../..
+    dockerfile: deployments/docker/Dockerfile.planet
+  restart: unless-stopped
+  volumes:
+    - ../../configs/universe-config.json:/app/configs/universe-config.json:ro
+  networks: [relic-ring]
+
+services:
+  aegis:
+    <<: *planet-common
+    environment: [PLANET_ID=Aegis, PORT=8101, CONFIG_PATH=/app/configs/universe-config.json]
+    ports: ["8101:8101"]
+    healthcheck: { test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8101/health"], interval: 3s, timeout: 1s, retries: 3 }
+  boreas:
+    <<: *planet-common
+    environment: [PLANET_ID=Boreas, PORT=8102, CONFIG_PATH=/app/configs/universe-config.json]
+    ports: ["8102:8102"]
+    healthcheck: { test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8102/health"], interval: 3s, timeout: 1s, retries: 3 }
+  dawn:
+    <<: *planet-common
+    environment: [PLANET_ID=Dawn, PORT=8103, CONFIG_PATH=/app/configs/universe-config.json]
+    ports: ["8103:8103"]
+    healthcheck: { test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8103/health"], interval: 3s, timeout: 1s, retries: 3 }
+  elysium:
+    <<: *planet-common
+    environment: [PLANET_ID=Elysium, PORT=8104, CONFIG_PATH=/app/configs/universe-config.json]
+    ports: ["8104:8104"]
+    healthcheck: { test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8104/health"], interval: 3s, timeout: 1s, retries: 3 }
+  fenix:
+    <<: *planet-common
+    environment: [PLANET_ID=Fenix, PORT=8105, CONFIG_PATH=/app/configs/universe-config.json]
+    ports: ["8105:8105"]
+    healthcheck: { test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8105/health"], interval: 3s, timeout: 1s, retries: 3 }
+  caelum:
+    <<: *planet-common
+    environment: [PLANET_ID=Caelum, PORT=8106, CONFIG_PATH=/app/configs/universe-config.json]
+    ports: ["8106:8106"]
+    healthcheck: { test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8106/health"], interval: 3s, timeout: 1s, retries: 3 }
+
+  orchestrator:
+    build:
+      context: ../..
+      dockerfile: deployments/docker/Dockerfile.orchestrator
+    restart: unless-stopped
+    environment:
+      CONFIG_PATH: /app/configs/universe-config.json
+      ORCHESTRATOR_ADDR: :8080
+      ORCHESTRATOR_PUBLIC_URL: http://orchestrator:8080
+      NODE_ENDPOINTS: '{"Aegis":"http://aegis:8101","Boreas":"http://boreas:8102","Dawn":"http://dawn:8103","Elysium":"http://elysium:8104","Fenix":"http://fenix:8105","Caelum":"http://caelum:8106"}'
+      HEALTH_INTERVAL: 2s
+      HEALTH_FAILURE_THRESHOLD: "2"
+    volumes:
+      - ../../configs/universe-config.json:/app/configs/universe-config.json:ro
+    ports: ["8080:8080"]
+    depends_on:
+      aegis: { condition: service_healthy }
+      boreas: { condition: service_healthy }
+      dawn: { condition: service_healthy }
+      elysium: { condition: service_healthy }
+      fenix: { condition: service_healthy }
+      caelum: { condition: service_healthy }
+    networks: [relic-ring]
+
+networks:
+  relic-ring:
+    driver: bridge

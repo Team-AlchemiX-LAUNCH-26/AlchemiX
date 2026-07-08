@@ -1,0 +1,7 @@
+// Add near the other component imports:
+import { AgentDashboard } from "./components/AgentDashboard";
+import "./styles/agent.css";
+
+// Render this after the existing primary topology/transmission grid.
+// Keeping it below the initial view preserves the Phase 1 layout.
+<AgentDashboard />
