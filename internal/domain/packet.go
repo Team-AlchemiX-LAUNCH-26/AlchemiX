@@ -32,4 +32,8 @@ type TransmissionResult struct {
 	DecodedPayload      string           `json:"decoded_payload"`
 	TotalLatencySeconds float64          `json:"total_latency_seconds"`
 	Latency             LatencyBreakdown `json:"latency"`
+
+	// AIAssessment is populated by the Phase 2 AI Agent.
+	// It is nil when the agent is not configured or unavailable.
+	AIAssessment any `json:"ai_assessment,omitempty"`
 }

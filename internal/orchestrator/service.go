@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/launch26/relic-ring-protocol/ai"
 	"github.com/launch26/relic-ring-protocol/internal/config"
 	"github.com/launch26/relic-ring-protocol/internal/domain"
 	packetops "github.com/launch26/relic-ring-protocol/internal/packet"
@@ -23,6 +24,10 @@ type Service struct {
 	Client        *transport.Client
 	Events        *transport.EventHub
 	PublicBaseURL string
+
+	// Agent is the optional Phase 2 AI Copilot.
+	// Set to ai.New() to enable; leave nil for Phase 1-only behaviour.
+	Agent *ai.Agent
 }
 
 func New(configPath, publicBaseURL string, failureThreshold int) (*Service, error) {
@@ -172,6 +177,13 @@ func (s *Service) StartTransmission(ctx context.Context, req protocol.Transmissi
 	}
 	result.Route = route
 	result.Latency = route.Latency
+
+	// Phase 2: AI Agent assessment (optional — nil agent = Phase 1 only).
+	if s.Agent != nil {
+		assessment := s.Agent.Assess(ctx, route)
+		result.AIAssessment = assessment
+	}
+
 	return result, nil
 }
 

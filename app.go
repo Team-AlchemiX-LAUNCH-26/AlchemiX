@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/launch26/relic-ring-protocol/ai"
 	"github.com/launch26/relic-ring-protocol/internal/domain"
 	"github.com/launch26/relic-ring-protocol/internal/orchestrator"
 	"github.com/launch26/relic-ring-protocol/pkg/protocol"
@@ -22,7 +23,8 @@ func NewApp() *App {
 	if base == "" {
 		base = "http://localhost:8080"
 	}
-	return &App{client: orchestrator.NewRemoteClient(base)}
+	client := orchestrator.NewRemoteClient(base)
+	return &App{client: client}
 }
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
