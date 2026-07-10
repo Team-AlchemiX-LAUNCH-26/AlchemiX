@@ -18,7 +18,7 @@ type RequestParser interface {
 
 // CandidateRoute represents a single candidate path with physical latency.
 type CandidateRoute struct {
-	Path             []string `json:"path"`
+	Path              []string `json:"path"`
 	PhysicalLatencyMS float64  `json:"physical_latency_ms"`
 }
 
@@ -90,10 +90,10 @@ type StateProvider interface {
 
 // NetworkState represents the validated live state of all links.
 type NetworkState struct {
-	Tick         int64                      `json:"tick"`
-	Links        map[string]LinkObservation `json:"links"`
-	ValidLinks   map[string]bool            `json:"valid_links"`
-	Uncertainties map[string]float64        `json:"uncertainties"`
+	Tick          int64                      `json:"tick"`
+	Links         map[string]LinkObservation `json:"links"`
+	ValidLinks    map[string]bool            `json:"valid_links"`
+	Uncertainties map[string]float64         `json:"uncertainties"`
 }
 
 // LinkEvaluation is the per-link scoring output.
@@ -118,20 +118,21 @@ const (
 
 // HopDecision records the agent's decision for a single hop.
 type HopDecision struct {
-	Tick            int64            `json:"tick"`
-	CurrentPlanet   string           `json:"current_planet"`
-	NextPlanet      string           `json:"next_planet"`
-	LinkID          string           `json:"link_id"`
-	Action          DecisionAction   `json:"action"`
-	Evaluation      LinkEvaluation   `json:"evaluation"`
-	Reasons         []string         `json:"reasons"`
-	AlternativePath []string         `json:"alternative_path,omitempty"`
+	Tick            int64          `json:"tick"`
+	CurrentPlanet   string         `json:"current_planet"`
+	NextPlanet      string         `json:"next_planet"`
+	LinkID          string         `json:"link_id"`
+	Action          DecisionAction `json:"action"`
+	Evaluation      LinkEvaluation `json:"evaluation"`
+	Reasons         []string       `json:"reasons"`
+	AlternativePath []string       `json:"alternative_path,omitempty"`
 }
 
 // DecisionReport is the final standardized output of the agent.
 type DecisionReport struct {
 	OriginID             string           `json:"origin_id"`
 	DestinationID        string           `json:"destination_id"`
+	ParsedPayload        string           `json:"parsed_payload,omitempty"`
 	ChosenPath           []string         `json:"chosen_path"`
 	LinkEvaluations      []LinkEvaluation `json:"link_evaluations"`
 	FinalLatencyEstimate float64          `json:"final_latency_estimate_ms"`

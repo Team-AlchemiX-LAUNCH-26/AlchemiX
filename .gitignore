@@ -10,7 +10,6 @@ frontend/dist/
 build/bin/
 
 # Environment
-.env
 .venv/
 training/.venv/
 
@@ -21,6 +20,7 @@ __pycache__/
 .ipynb_checkpoints/
 
 # Editors / OS
-.vscode/settings.json
 .DS_Store
 Thumbs.db
+config.bat
+node_modules
