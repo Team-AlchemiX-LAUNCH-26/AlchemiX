@@ -78,25 +78,33 @@ func (a *Agent) Execute(ctx context.Context, naturalLanguageRequest string) (Dec
 		dedupedEvals = append(dedupedEvals, e)
 	}
 
-	// Calculate total latency estimate.
-	totalLatency := 0.0
-	for _, e := range dedupedEvals {
-		totalLatency += e.CombinedCost
-	}
+	totalLatency := latencyEstimateFromChosenHops(hopDecisions)
 
 	// Build the report.
 	report := BuildPublicReport(
-		parsed.OriginID, parsed.DestinationID,
+		parsed.OriginID, parsed.DestinationID, parsed.Payload,
 		chosenPath, dedupedEvals, totalLatency, hopDecisions,
 	)
 
 	return report, nil
 }
 
+func latencyEstimateFromChosenHops(hops []HopDecision) float64 {
+	total := 0.0
+	for _, hop := range hops {
+		if hop.LinkID == "" || hop.NextPlanet == "" {
+			continue
+		}
+		total += hop.Evaluation.PhysicalLatencyMS +
+			hop.Evaluation.PredictedCongestionPenaltyMS
+	}
+	return total
+}
+
 // GetState returns a summary of the agent's current state.
 func (a *Agent) GetState() map[string]interface{} {
 	return map[string]interface{}{
-		"config":    a.Config,
-		"planets":   a.Parser.validPlanets,
+		"config":  a.Config,
+		"planets": a.Parser.validPlanets,
 	}
 }

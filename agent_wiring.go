@@ -157,18 +157,17 @@ func buildAgentBindings() (AgentBindings, error) {
 				})
 			}
 
-			// Estimate total latency as sum of physical + congestion on chosen path.
-			totalMS := 0.0
-			for _, e := range evals {
-				totalMS += e.PhysicalLatencyMS + e.PredictedCongestionPenaltyMS
-			}
-			if totalMS == 0 || math.IsNaN(totalMS) {
-				totalMS = report.FinalLatencyEstimate
+			// Agent reports estimate over chosen hops only. LinkEvaluations may
+			// include alternative links scored for diagnostics.
+			totalMS := report.FinalLatencyEstimate
+			if math.IsNaN(totalMS) {
+				totalMS = 0
 			}
 
 			return DecisionReportDTO{
 				OriginID:               report.OriginID,
 				DestinationID:          report.DestinationID,
+				ParsedPayload:          report.ParsedPayload,
 				ChosenPath:             report.ChosenPath,
 				LinkEvaluations:        evals,
 				FinalLatencyEstimateMS: totalMS,

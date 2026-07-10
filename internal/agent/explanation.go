@@ -38,7 +38,7 @@ func ExplainDecision(report DecisionReport) string {
 
 // BuildPublicReport creates the standardized competition-facing JSON output.
 func BuildPublicReport(
-	originID, destinationID string,
+	originID, destinationID, parsedPayload string,
 	chosenPath []string,
 	evaluations []LinkEvaluation,
 	totalLatency float64,
@@ -49,6 +49,7 @@ func BuildPublicReport(
 	return DecisionReport{
 		OriginID:             originID,
 		DestinationID:        destinationID,
+		ParsedPayload:        parsedPayload,
 		ChosenPath:           chosenPath,
 		LinkEvaluations:      evaluations,
 		FinalLatencyEstimate: totalLatency,
